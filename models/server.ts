@@ -2,6 +2,8 @@ import express, {Application}  from 'express';
 import userRoutes from '../routes/users'
 import cors from 'cors'
 
+import db from '../db/connection';
+
 class Server {
     private app: Application;
     private port: string;
@@ -13,6 +15,7 @@ class Server {
         this.app = express();
         this.port = process.env.PORT || '3000';
 
+        this.dbConnection();
         this.middlewares();
         this.routes();
     }
@@ -26,6 +29,16 @@ class Server {
 
         // Carpeta publica
         this.app.use(express.static('public'));
+    }
+
+    async dbConnection() {
+        try {
+            await db.authenticate();
+            console.log('The connection to Database is OK!');
+
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
     routes() {
